@@ -1,8 +1,14 @@
 ﻿using UnityEngine;
 
 public class Player : MonoBehaviour {
-    private Torpedo[] torpedoes;
-    Torpedo selectedTorpedo;
+    // TODO: Make generic player class to be inherited by both BotPlayer and new HumanPlayer class
+    public Torpedo selectedTorpedo;
+    public int playerNumber; // TODO: Rename player number to conform with the change making player number equal to the side of the field the player is on in accordance with the LEFT and RIGHT constants
+    [SerializeField] int health = 1;
+
+    private void Awake() {
+        playerNumber = DetermineOnRightOrLeft();
+    }
 
     private void Start() {
         SelectClosestTorpedoFromList();
@@ -10,24 +16,16 @@ public class Player : MonoBehaviour {
 
     private void Update() {
         DetectInput();
-    }
-
-    private void UpdateTorpedoList() {
-        torpedoes = GameObject.FindObjectsOfType<Torpedo>();
-    }
-
-    private void SelectClosestTorpedoFromList() {
-        UpdateTorpedoList();
-        Torpedo closestTorpedo = torpedoes[0];
-        foreach (Torpedo torpedo in torpedoes) {
-            // TODO: Find Torpedo which is closest to your ship
+        if (selectedTorpedo == null) {
+            SelectClosestTorpedoFromList();
         }
-        SelectTorpedo(closestTorpedo);
+        if (health <= 0) {
+            Lose();
+        }
     }
 
-    private void SelectTorpedo(Torpedo torpedo) {
-        selectedTorpedo = torpedo;
-        selectedTorpedo.FlipColor();
+    private void Lose() {
+        Destroy(gameObject);
     }
 
     private void DetectInput() {
@@ -36,7 +34,7 @@ public class Player : MonoBehaviour {
     }
 
     private void DetectKeyboard() {
-        if (Input.anyKeyDown) {
+        if (Input.anyKeyDown && selectedTorpedo != null) {
             string input = Input.inputString;
             if (input.Length > 0) {
                 char inputChar = input[0];
@@ -50,11 +48,56 @@ public class Player : MonoBehaviour {
             RaycastHit hit;
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out hit)) {
-                if (hit.transform.name.Contains("Torpedo")) {
-                    selectedTorpedo.FlipColor();
+                if (hit.transform.name.Contains("Torpedo") && hit.transform.gameObject.GetComponent<Torpedo>().IsSelectableByPlayer(playerNumber)) {
+                    if (selectedTorpedo != null) {
+                        selectedTorpedo.FlipSelectedByPlayer(playerNumber);
+                    }
                     SelectTorpedo(hit.transform.gameObject.GetComponent<Torpedo>());
                 }
             }
         }
+    }
+
+    private void SelectClosestTorpedoFromList() {
+        Torpedo closestTorpedo = null;
+        foreach (Torpedo torpedo in GameController.instance.GetTorpedoList()) {
+            if (torpedo.IsSelectableByPlayer(playerNumber)) {
+                if (closestTorpedo == null || Vector3.Distance(closestTorpedo.transform.position, gameObject.transform.position) > Vector3.Distance(torpedo.transform.position, gameObject.transform.position)) {
+                    closestTorpedo = torpedo;
+                }
+            }
+        }
+        if (closestTorpedo != null) {
+            SelectTorpedo(closestTorpedo);
+        }
+    }
+
+    private void SelectTorpedo(Torpedo torpedo) {
+        selectedTorpedo = torpedo;
+        if (selectedTorpedo != null) {
+            selectedTorpedo.FlipSelectedByPlayer(playerNumber);
+        }
+    }
+
+    public void TorpedoSolved() {
+        selectedTorpedo = null;
+        SelectClosestTorpedoFromList();
+    }
+
+    public int DetermineOnRightOrLeft() {
+        if (transform.position.z < 0 ) {
+            return Constants.LEFT;
+        } else {
+            return Constants.RIGHT;
+        }
+    }
+
+    private void OnTriggerEnter(Collider other) {
+        if (other.gameObject.Equals(selectedTorpedo)) {
+            selectedTorpedo = null;
+        }
+        health -= 1;
+        GameObject torpedoParent = other.gameObject.transform.parent.gameObject;
+        Destroy(other.gameObject.transform.parent.gameObject);
     }
 }

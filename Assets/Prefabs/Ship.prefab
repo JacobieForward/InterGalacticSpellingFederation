@@ -12,6 +12,8 @@ GameObject:
   - component: {fileID: 1882809651734765607}
   - component: {fileID: 6943754331847832851}
   - component: {fileID: 7441667261856516837}
+  - component: {fileID: 798955403}
+  - component: {fileID: 798955402}
   m_Layer: 0
   m_Name: Ship
   m_TagString: Untagged
@@ -92,3 +94,33 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!54 &798955403
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3054829317289144605}
+  serializedVersion: 2
+  m_Mass: 0.0000001
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
+--- !u!114 &798955402
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3054829317289144605}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da826af57b62dd840bd1564143c01912, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  selectedTorpedo: {fileID: 0}
+  playerNumber: 0
