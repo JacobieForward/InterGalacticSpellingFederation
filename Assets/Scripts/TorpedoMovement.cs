@@ -1,12 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class TorpedoMovement : MonoBehaviour {
     private float movementSpeed = 1.0f;
     private Animation animations;
 
-    private void Start() {
+    private void Awake() {
         animations = gameObject.transform.parent.GetComponent<Animation>();
     }
 
@@ -25,15 +23,20 @@ public class TorpedoMovement : MonoBehaviour {
         }
     }
 
-    private int DetermineGoingRightOrLeft() {
+    public int DetermineGoingRightOrLeft() {
         if (gameObject.transform.position.y == 1) {
             return Constants.RIGHT;
-        }
-        if (gameObject.transform.position.y == -1) {
+        } else {
             return Constants.LEFT;
         }
-        return -1; // Will return -1 if torpedo is in animation transition
     }
 
-
+    public void ChangeTorpedoDirection() {
+        if (DetermineGoingRightOrLeft() == Constants.LEFT) {
+            animations.Play("FlipTorpedoToRight");
+        } else {
+            animations.Play("FlipTorpedoToLeft");
+        }
+        movementSpeed += Constants.MOVEMENTINCREASEPERSOLVE;
+    }
 }

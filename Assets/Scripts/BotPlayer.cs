@@ -1,8 +1,9 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class BotPlayer : Player {
-    //[SerializeField] Torpedo selectedTorpedo; // Serialized multiple times error... but I need this
     [SerializeField] int difficulty = Constants.DIFFICULTYEASY;
+
     private float torpedoLetterSolveTime;
     private float torpedoLetterSolveCounter;
 
@@ -17,9 +18,21 @@ public class BotPlayer : Player {
 
     private void Update() {
         SolveTorpedoAutomatically();
+        DetectIfSelectedByPlayer();
         if (selectedTorpedo == null) {
             SelectClosestTorpedoFromList();
         }
+        if (health <= 0) {
+            Lose();
+        }
+    }
+
+    private void DetectIfSelectedByPlayer() {
+        
+    }
+
+    private void Lose() {
+        Destroy(gameObject);
     }
 
     private void SolveTorpedoAutomatically() {
@@ -50,8 +63,5 @@ public class BotPlayer : Player {
 
     private void SelectTorpedo(Torpedo torpedo) {
         selectedTorpedo = torpedo;
-        if (selectedTorpedo != null) {
-            selectedTorpedo.FlipSelectedByPlayer(playerNumber);
-        }
     }
 }

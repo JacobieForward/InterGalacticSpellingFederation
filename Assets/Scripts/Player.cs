@@ -4,7 +4,7 @@ public class Player : MonoBehaviour {
     // TODO: Make generic player class to be inherited by both BotPlayer and new HumanPlayer class
     public Torpedo selectedTorpedo;
     public int playerNumber; // TODO: Rename player number to conform with the change making player number equal to the side of the field the player is on in accordance with the LEFT and RIGHT constants
-    [SerializeField] int health = 1;
+    public int health = 1;
 
     private void Awake() {
         playerNumber = DetermineOnRightOrLeft();
@@ -49,9 +49,6 @@ public class Player : MonoBehaviour {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out hit)) {
                 if (hit.transform.name.Contains("Torpedo") && hit.transform.gameObject.GetComponent<Torpedo>().IsSelectableByPlayer(playerNumber)) {
-                    if (selectedTorpedo != null) {
-                        selectedTorpedo.FlipSelectedByPlayer(playerNumber);
-                    }
                     SelectTorpedo(hit.transform.gameObject.GetComponent<Torpedo>());
                 }
             }
@@ -74,9 +71,6 @@ public class Player : MonoBehaviour {
 
     private void SelectTorpedo(Torpedo torpedo) {
         selectedTorpedo = torpedo;
-        if (selectedTorpedo != null) {
-            selectedTorpedo.FlipSelectedByPlayer(playerNumber);
-        }
     }
 
     public void TorpedoSolved() {
@@ -97,7 +91,17 @@ public class Player : MonoBehaviour {
             selectedTorpedo = null;
         }
         health -= 1;
-        GameObject torpedoParent = other.gameObject.transform.parent.gameObject;
-        Destroy(other.gameObject.transform.parent.gameObject);
+        DestroyTorpedo(other.gameObject);
+        SelectClosestTorpedoFromList();
+    }
+
+    private void DestroyTorpedo(GameObject torpedoToDestroy) {
+        GameObject torpedoParent = torpedoToDestroy.transform.parent.gameObject;
+        Destroy(torpedoParent);
+        GameController.instance.RemoveTorpedoFromList(torpedoToDestroy.GetComponent<Torpedo>());
+    }
+
+    public Torpedo GetSelectedTorpedo() {
+        return selectedTorpedo;
     }
 }

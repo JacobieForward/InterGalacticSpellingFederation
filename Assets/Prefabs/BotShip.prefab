@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   selectedTorpedo: {fileID: 0}
   playerNumber: 1
-  health: 1
+  health: 5
   difficulty: 1
 --- !u!1001 &580561079657326924
 PrefabInstance:

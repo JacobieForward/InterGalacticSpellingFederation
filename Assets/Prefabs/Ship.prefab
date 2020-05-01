@@ -124,3 +124,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   selectedTorpedo: {fileID: 0}
   playerNumber: 0
+  health: 5
